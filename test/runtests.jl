@@ -2,5 +2,7 @@ using Dorayaki
 using Test
 
 @testset "Dorayaki.jl" begin
-    # Write your tests here.
+    @testset "basicmath" begin
+        include("basicmath.jl")
+    end
 end
