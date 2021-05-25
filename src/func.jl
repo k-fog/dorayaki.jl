@@ -1,3 +1,5 @@
+using .Meta
+
 export Func, nullfunc, @func
 
 abstract type Func end
@@ -5,6 +7,10 @@ abstract type Func end
 struct NullFunc <: Func end
 const nullfunc = NullFunc()
 
+
+"""
+    (f::Func)(args...)
+"""
 function (f::Func)(args...)
     args = Tuple(asvar(x) for x in args)
     xs = [x.data for x in args]
@@ -16,20 +22,32 @@ function (f::Func)(args...)
     return length(outputs) > 1 ? outputs : outputs[1]
 end
 
+
+"""
+    @func
+"""
 macro func(obj)
     @assert obj.head == :struct "@func is for struct type."
     if obj.args[2] isa Symbol
         name = obj.args[2]
         obj.args[2] = :($name <: Func)
-    else
+    elseif isexpr(obj.args[2], :curly)
         name = obj.args[2].args[1]
+        header = obj.args[2]
+        if obj.args[2].args[end] != :Func obj.args[2] = :($header <: Func) end
+    elseif isexpr(obj.args[2], :<:)
+        name = obj.args[2].args[1]
+    else
+        @error "unexpected args."
     end
     definedfield = obj.args[3]
     obj.args[3] = quote
         $definedfield
         args::Tuple
         outputs::Tuple
-        $name() = new()
+    end
+    if length(definedfield.args) == 1
+        push!(obj.args[3].args, :($name() = new()))     
     end
     esc(obj)
 end

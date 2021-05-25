@@ -1,8 +1,10 @@
 using Dorayaki
 using Test
 
+@testset "basicmath" begin
+    include("test_basicmath.jl")
+end
+
 @testset "Dorayaki.jl" begin
-    @testset "basicmath" begin
-        include("basicmath.jl")
-    end
+    
 end

@@ -1,15 +1,15 @@
-export Var
-export data, gradient, initgrad!, isgraddefined, isparam, gradient!
+export Var, asvar, data, gradient, initgrad!, isgraddefined, gradient!
 
-mutable struct Var{T,F <: Func}
+mutable struct Var{T <: AbstractArray,F <: Func}
     data::T
     creator::F
     grad::Union{Var{T},Nothing}
 end
 
-function Var(data::T, creator::F=nullfunc) where {T,F <: Func}
+function Var(data::T, creator::F=nullfunc) where {T <: AbstractArray,F <: Func}
     Var{T,F}(data, creator, nothing)
 end
+Var(data::Number, creator=nullfunc) = Var([data], creator)
 
 asvar(x) = x isa Var ? x : Var(x)
 asvar(x, creator) = Var(x, creator)
