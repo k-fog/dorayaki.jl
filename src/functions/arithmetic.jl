@@ -1,12 +1,18 @@
 import Base: +, -, *, /
 import Base.Broadcast: broadcasted
 
+export add, mul, neg, sub, pow, div, matmul
+
 """
     Add <: Func
 """
 @func mutable struct Add end
 
 forward(f::Add, A, B) = A .+ B
+
+function backward(f::Add, gy)
+    return gy, gy
+end
 
 add(A, B) = Add()(A, B)
 
@@ -22,6 +28,13 @@ add(A, B) = Add()(A, B)
 
 forward(f::Mul, A, B) = A .* B
 
+function backward(f::Mul, gy)
+    x1, x2 = f.args
+    gx1 = gy .* x2
+    gx2 = gy .* x1
+    return gx1, gx2
+end
+
 mul(A, B) = Mul()(A, B)
 
 broadcasted(::typeof(*), A::Var, B::Var) = mul(A, B)
@@ -36,6 +49,8 @@ broadcasted(::typeof(*), A, B::Var) = mul(A, B)
 
 forward(f::Neg, x) = -x
 
+backward(f::Neg, gy) = -gy
+
 neg(x) = Neg()(x)
 
 -(x::Var) = neg(x)
@@ -47,6 +62,11 @@ neg(x) = Neg()(x)
 @func mutable struct Sub end
 
 forward(f::Sub, A, B) = A .- B
+
+function backward(f::Sub, gy)
+    gx1, gx2 = gy, -gy
+    return gx1, gx2
+end
 
 sub(A, B) = Sub()(A, B)
 
@@ -64,6 +84,8 @@ sub(A, B) = Sub()(A, B)
 end
 
 forward(f::Pow, x) = x.^f.c
+
+backward(f::Pow, gy) = f.c .* f.args[1]^(f.c - 1) .* gy
 
 pow(x, c) = Pow(c)(x)
 

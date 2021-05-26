@@ -1,10 +1,11 @@
 using Dorayaki
 using Test
 
-@testset "basicmath" begin
-    include("test_basicmath.jl")
+@testset "functions" begin
+    include("test_arithmetic.jl")
+    include("test_tensor.jl")
 end
 
-@testset "Dorayaki.jl" begin
-    
+@testset "gradient" begin
+    include("test_gradient.jl")
 end

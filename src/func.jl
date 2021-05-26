@@ -1,6 +1,6 @@
 using .Meta
 
-export Func, nullfunc, @func
+export Func, NullFunc, nullfunc, @func
 
 abstract type Func end
 
@@ -47,7 +47,7 @@ macro func(obj)
         outputs::Tuple
     end
     if length(definedfield.args) == 1
-        push!(obj.args[3].args, :($name() = new()))     
+        push!(obj.args[3].args, :($name() = new()))
     end
-    esc(obj)
+    return esc(obj)
 end
