@@ -26,6 +26,10 @@ add(A, B) = Add()(A, B)
 +(A::Var, B) = add(A, B)
 +(A, B::Var) = add(A, B)
 
+broadcasted(::typeof(+), A::Var, B::Var) = add(A, B)
+broadcasted(::typeof(+), A::Var, B) = add(A, B)
+broadcasted(::typeof(+), A, B::Var) = add(A, B)
+
 
 """
     Mul <: Func
@@ -38,6 +42,11 @@ function backward(f::Mul, gy)
     x1, x2 = f.args
     gx1 = gy .* x2
     gx2 = gy .* x1
+    x_shape1, x_shape2 = size.(f.args)
+    if x_shape1 != x_shape2
+        gx1 = sumto(gx1, x_shape1)
+        gx2 = sumto(gx2, x_shape2)
+    end
     return gx1, gx2
 end
 
@@ -71,6 +80,11 @@ forward(f::Sub, A, B) = A .- B
 
 function backward(f::Sub, gy)
     gx1, gx2 = gy, -gy
+    x_shape1, x_shape2 = size.(f.args)
+    if x_shape1 != x_shape2
+        gx1 = sumto(gx1, x_shape1)
+        gx2 = sumto(gx2, x_shape2)
+    end
     return gx1, gx2
 end
 
@@ -79,6 +93,10 @@ sub(A, B) = Sub()(A, B)
 -(A::Var, B::Var) = sub(A, B)
 -(A::Var, B) = sub(A, B)
 -(A, B::Var) = sub(A, B)
+
+broadcasted(::typeof(-), A::Var, B::Var) = sub(A, B)
+broadcasted(::typeof(-), A::Var, B) = sub(A, B)
+broadcasted(::typeof(-), A, B::Var) = sub(A, B)
 
 
 """
@@ -109,6 +127,11 @@ function backward(f::Div, gy)
     x1, x2 = f.args
     gx1 = gy / x2
     gx2 = gy .* (-x1 / x2^2)
+    x_shape1, x_shape2 = size.(f.args)
+    if x_shape1 != x_shape2
+        gx1 = sumto(gx1, x_shape1)
+        gx2 = sumto(gx2, x_shape2)
+    end
     return gx1, gx2
 end
 
@@ -117,3 +140,7 @@ div(A, B) = Div()(A, B)
 /(A::Var, B::Var) = div(A, B)
 /(A::Var, B) = div(A, B)
 /(A, B::Var) = div(A, B)
+
+broadcasted(::typeof(/), A::Var, B::Var) = div(A, B)
+broadcasted(::typeof(/), A::Var, B) = div(A, B)
+broadcasted(::typeof(/), A, B::Var) = div(A, B)

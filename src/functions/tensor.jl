@@ -56,7 +56,7 @@ forward(f::Transpose, x) = transpose(x)
 
 backward(f::Transpose, gy) = transpose(gy)
 
-transpose(x) = Transpose()(x)
+transpose(x::Var) = Transpose()(x)
 
 
 """
@@ -92,7 +92,7 @@ forward(f::BroadcastTo, x) = x .* ones(f.shape)
 
 backward(f::BroadcastTo, gy) = sumto(gy, size(f.args[1]))
 
-broadcastto(x, shape) = size(x) == shape ? asvar(x) : BroadcastTo(shape)(x)
+broadcastto(x::Var, shape) = size(x) == shape ? asvar(x) : BroadcastTo(shape)(x)
 
 
 """
@@ -107,4 +107,4 @@ forward(f::SumTo, x) = _sumto(x, f.shape)
 
 backward(f::SumTo, gy) = broadcastto(gy, size(f.args[1]))
 
-sumto(x, shape) = size(x) == shape ? asvar(x) : SumTo(shape)(x)
+sumto(x::Var, shape) = size(x) == shape ? asvar(x) : SumTo(shape)(x)
