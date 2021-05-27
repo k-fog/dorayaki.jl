@@ -1,6 +1,6 @@
-import Base: reshape, adjoint, transpose, *
+import Base: reshape, adjoint, transpose, *, sum
 
-export matmul, reshape, transpose, adjoint
+export matmul, reshape, transpose, adjoint, broadcastto, sumto
 
 
 """
@@ -57,3 +57,54 @@ forward(f::Transpose, x) = transpose(x)
 backward(f::Transpose, gy) = transpose(gy)
 
 transpose(x) = Transpose()(x)
+
+
+"""
+    Sum <: Func
+"""
+@func mutable struct Sum
+    dims::Union{Int,Tuple,Nothing}
+    Sum(dims) = new(dims)
+end
+
+function forward(f::Sum, x)
+    if f.dims isa Nothing
+        return sum(x)
+    else
+        return sum(x, dims=f.dims)
+    end
+end
+
+backward(f::Sum, gy) = broadcastto(gy, size(args[1]))
+
+sum(x::Var; dims=nothing) = Sum(dims)(x)
+
+
+"""
+    BroadcastTo <: Func
+"""
+@func mutable struct BroadcastTo
+    shape::Tuple
+    BroadcastTo(shape) = new(shape)
+end
+
+forward(f::BroadcastTo, x) = x .* ones(f.shape)
+
+backward(f::BroadcastTo, gy) = sumto(gy, size(f.args[1]))
+
+broadcastto(x, shape) = size(x) == shape ? asvar(x) : BroadcastTo(shape)(x)
+
+
+"""
+    SumTo <: Func
+"""
+@func mutable struct SumTo
+    shape::Tuple
+    SumTo(shape) = new(shape)
+end
+
+forward(f::SumTo, x) = _sumto(x, f.shape)
+
+backward(f::SumTo, gy) = broadcastto(gy, size(f.args[1]))
+
+sumto(x, shape) = size(x) == shape ? asvar(x) : SumTo(shape)(x)

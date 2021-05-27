@@ -11,7 +11,13 @@ export add, mul, neg, sub, pow, div
 forward(f::Add, A, B) = A .+ B
 
 function backward(f::Add, gy)
-    return gy, gy
+    gx1, gx2 = gy, gy
+    x_shape1, x_shape2 = size.(f.args)
+    if x_shape1 != x_shape2
+        gx1 = sumto(gx1, x_shape1)
+        gx2 = sumto(gx2, x_shape2)
+    end
+    return gx1, gx2
 end
 
 add(A, B) = Add()(A, B)
@@ -98,6 +104,13 @@ Base.:^(x::Var, c) = pow(x, c)
 @func mutable struct Div end
 
 forward(f::Div, A, B) = A ./ B
+
+function backward(f::Div, gy)
+    x1, x2 = f.args
+    gx1 = gy / x2
+    gx2 = gy .* (-x1 / x2^2)
+    return gx1, gx2
+end
 
 div(A, B) = Div()(A, B)
 
