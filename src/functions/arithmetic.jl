@@ -1,7 +1,7 @@
 import Base: +, -, *, /
 import Base.Broadcast: broadcasted
 
-export add, mul, neg, sub, pow, div, matmul
+export add, mul, neg, sub, pow, div
 
 """
     Add <: Func
@@ -104,17 +104,3 @@ div(A, B) = Div()(A, B)
 /(A::Var, B::Var) = div(A, B)
 /(A::Var, B) = div(A, B)
 /(A, B::Var) = div(A, B)
-
-
-"""
-    MatMul <: Func
-"""
-@func mutable struct MatMul end
-
-forward(f::MatMul, A, B) = A * B
-
-matmul(A, B) = MatMul()(A, B)
-
-*(A::Var, B::Var) = matmul(A, B)
-*(A::Var, B) = matmul(A, B)
-*(A, B::Var) = matmul(A, B)
