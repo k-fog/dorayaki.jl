@@ -10,7 +10,7 @@ end
 
 @testset "matmul" begin
     w = Var([1 2 3; 4 5 6])
-    x = Var(transpose(x.data))
+    x = Var(transpose(w.data))
     y = w * x
     @test y.data == [14 32; 32 77]
 
@@ -21,6 +21,6 @@ end
 
     x_data = randn(10, 1)
     w_data = randn(1, 5)
-    f = w -> matmul(Variable(x_data), w)
+    f = w -> matmul(Var(x_data), w)
     @test gradcheck(f, w_data)
 end

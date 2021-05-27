@@ -44,7 +44,7 @@ end
 
     x = randn(3, 3)
     y = randn(3, 3)
-    f = x -> x / y
+    f = x -> x ./ y
     @test gradcheck(f, x)
     y = randn(3)
     @test gradcheck(f, x)
@@ -56,5 +56,5 @@ end
     @test (x^10).data == [1024]
     y = x^2
     gradient!(y)
-    @test y.grad.data == [4.0]
+    @test x.grad.data == [4.0]
 end
