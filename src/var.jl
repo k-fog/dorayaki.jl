@@ -1,4 +1,4 @@
-export Var, asvar, data, gradient, initgrad!, cleargrad!, isgraddefined
+export Var, asvar, data, gradient, initgrad!, cleargrad!, isgraddefined, addname!, name
 
 mutable struct Var{T <: AbstractArray,F <: Func}
     data::T
@@ -40,3 +40,11 @@ function initgrad!(x::Var, v=1.0)
 end
 
 isgraddefined(x::Var) = !isnothing(x.grad)
+
+const varname = Dict{Var, String}()
+
+function addname!(x::Var, name)
+    varname[x] = name
+end
+
+getname(x::Var) = haskey(varname, x) ? varname[name] : ""

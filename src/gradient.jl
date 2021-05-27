@@ -1,26 +1,5 @@
 export gradient!
 
-function topsort(top::Var)
-    sorted = Var[]
-    visited = Set{Var}()
-    function visit(x)
-        x in visited && return
-        push!(visited, x)
-        x.creator isa NullFunc && return push!(sorted, x)
-        for v in x.creator.args
-            v isa Var && visit(v)
-        end
-        push!(sorted, x)
-    end
-    visit(top)
-    reverse(sorted)
-end
-
-function addto!(x, y)
-    if isnothing(x) x = y
-    else x = x + y end
-end
-
 function gradient!(top::Var)
     sorted = topsort(top)
     isgraddefined(top) || initgrad!(top)
