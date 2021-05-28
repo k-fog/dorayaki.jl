@@ -28,11 +28,17 @@ Base.ndims(x::Var) = ndims(x.data)
 Base.eltype(x::Var) = eltype(x.data)
 
 function Base.show(io::IO, ::MIME"text/plain", v::Var)
-    print(io, "Var($(v.data)")
+    print(io, "Var($(v.data))")
 end
 
 function cleargrad!(x::Var)
     x.grad = nothing
+end
+
+function cleargrad!(x::Var...)
+    for v in x
+        cleargrad!(v)
+    end
 end
 
 function initgrad!(x::Var, v=1.0)

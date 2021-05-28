@@ -16,6 +16,7 @@ function topsort(top::Var)
     reverse(sorted)
 end
 
+
 function _dot_var(v::Var, verbose=false)
     name = getname(v)
     if verbose && isdatadefined(v)
@@ -70,6 +71,7 @@ function allclose(a, b; rtol=1e-4, atol=1e-5)
     return all(@. abs(a - b) <= (atol + rtol * abs(b)))
 end
 
+
 function numericalgrad(f, x, args...; eps=1e-4)
     x = x isa Var ? x.data : x
     grad = zeros(Float64, size(x))
@@ -79,7 +81,7 @@ function numericalgrad(f, x, args...; eps=1e-4)
         fxh1 = f(x, args...)
         x[idx] = tmp - eps
         fxh2 = f(x, args...)
-        if fxh1 isa Var grad[idx] = sum(fxh1.data .- fxh2.data) / (2 * eps)
+        if fxh1 isa Var grad[idx] = sum(fxh1.data - fxh2.data) / (2 * eps)
         else grad[idx] = sum(fxh1 - fxh2) / (2 * eps) end
         x[idx] = tmp
     end
@@ -96,6 +98,7 @@ function gradcheck(f, x, args...; rtol=1e-4, atol=1e-5)
     allclose(num_grad, bp_grad) || return false
     return true
 end
+
 
 function _sumto(x, shape)
     lead = ndims(x) - length(shape)

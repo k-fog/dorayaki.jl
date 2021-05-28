@@ -1,6 +1,6 @@
 import Base: reshape, adjoint, transpose, *, sum
 
-export matmul, reshape, transpose, adjoint, broadcastto, sumto
+export matmul, linear, reshape, transpose, adjoint, broadcastto, sumto
 
 
 """
@@ -22,6 +22,24 @@ matmul(w, x) = MatMul()(w, x)
 Base.:*(A::Var, B::Var) = matmul(A, B)
 Base.:*(A::Var, B) = matmul(A, B)
 Base.:*(A, B::Var) = matmul(A, B)
+
+
+"""
+    Linear <: Func
+"""
+@func mutable struct Linear end
+
+forward(f::Linear, w, x, b=nothing) = b isa Nothing ? w * x : w * x .+ b
+
+function backward(f::Linear, gy)
+    w, x, b = length(f.args) == 3 ? f.args : (f.args..., nothing)
+    gb = b isa Nothing ? nothing : sumto(gy, size(b))
+    gw = matmul(gy, transpose(x))
+    gx = matmul(transpose(w), gy)
+    return gw, gx, gb
+end
+
+linear(w, x, b=nothing) = b isa Nothing ? Linear()(w, x) : Linear()(w, x, b)
 
 
 """
