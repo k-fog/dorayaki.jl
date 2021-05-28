@@ -101,15 +101,16 @@ end
 
 
 function _sumto(x, shape)
-    lead = ndims(x) - length(shape)
-    lead_dim = Tuple(1:lead)
-    dim = ()
-    for i in 1:length(shape)
+    target_dim = length(shape)
+    lead = ndims(x) - target_dim
+    lead_dims = Tuple(target_dim:ndims(x))
+    dims = ()
+    for i in 1:target_dim
         if shape[i] == 1 && size(x, i) > 1
-            dim = tuple(dim..., i + lead)
+            dims = tuple(dims..., i + lead)
         end
     end
-    y = sum(x, dims=(lead_dim..., dim...))
-    lead > 0 && (y = dropdims(y, dims=lead_dim))
+    y = sum(x, dims=(lead_dims..., dims...))
+    lead > 0 && (y = dropdims(y, dims=lead_dims))
     return y
 end
