@@ -47,7 +47,7 @@ end
 
 isgraddefined(x::Var) = !isnothing(x.grad)
 
-const varname = Dict{Var, String}()
+const varname = WeakKeyDict{Var, String}()
 
 function addname!(x::Var, name)
     varname[x] = name
