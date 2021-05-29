@@ -55,7 +55,7 @@ forward(f::Reshape, x) = reshape(x, f.shape)
 backward(f::Reshape, gy) = reshape(gy, size(f.args[1]))
 
 function reshape(x, shape...)
-    if length(shape) == 1 && shape[1] isa Union{Tuple, AbstractArray}
+    if length(shape) == 1 && shape[1] isa Union{Tuple,AbstractArray}
         shape = shape[1]
     end
     size(x) == shape && return asvar(x)
