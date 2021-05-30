@@ -6,7 +6,7 @@
 
 Dorayaki.jl is a modest deep-learning framework for julia.
 
-I make this framework to study deep-learning, so it may has bugs which I haven't been aware.
+I make this framework to study deep-learning, so it may have bugs which I haven't been aware.
 
 ## Description
 
