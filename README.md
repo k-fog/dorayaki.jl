@@ -1,6 +1,8 @@
 # Dorayaki.jl
 
-![dorayaki](https://user-images.githubusercontent.com/59814110/120074209-c07ec580-c0d6-11eb-9050-fd69216e5594.png)
+<div align="center">
+    <img src="https://user-images.githubusercontent.com/59814110/120074209-c07ec580-c0d6-11eb-9050-fd69216e5594.png" width=200px>
+</div>
 
 Dorayaki.jl is a modest deep-learning framework for julia.
 
