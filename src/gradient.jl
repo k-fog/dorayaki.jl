@@ -5,7 +5,7 @@ function gradient!(top::Var; debug=false)
     isgraddefined(top) || initgrad!(top)
     for v in sorted
         f = v.creator
-        f isa NullFunc && continue
+        f isa SymbolFunc && continue
         debug && println(typeof(f))
         gys = [output.value.grad for output in f.outputs]
         gxs = backward(v.creator, gys...)

@@ -7,6 +7,11 @@ abstract type Func end
 struct NullFunc <: Func end
 const nullfunc = NullFunc()
 
+struct ParamCreator <: Func end
+const paramcreator = ParamCreator()
+
+const SymbolFunc = Union{NullFunc, ParamCreator}
+
 
 """
     (f::Func)(args...)

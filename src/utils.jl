@@ -6,7 +6,7 @@ function topsort(top::Var)
     function visit(x)
         x in visited && return
         push!(visited, x)
-        x.creator isa NullFunc && return push!(sorted, x)
+        x.creator isa Union{NullFunc,ParamCreator} && return push!(sorted, x)
         for v in x.creator.args
             v isa Var && visit(v)
         end
@@ -45,7 +45,7 @@ function get_dot_graph(output::Var; verbose=true)
 
     for v in variables
         f = v.creator
-        f isa NullFunc && continue
+        f isa SymbolFunc && continue
         txt *= _dot_func(f)
         for x in f.args
             txt *= _dot_var(x, verbose)

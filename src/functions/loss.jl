@@ -14,7 +14,6 @@ end
 function backward(f::MeanSquaredError, gy)
     x1, x2 = f.args
     diff = x1 - x2
-    gy = broadcastto(gy, size(diff))
     gx1 = gy .* diff .* (2.0 / length(diff))
     gx2 = -gx1
     return gx1, gx2

@@ -4,6 +4,7 @@ include("config.jl")
 include("func.jl")
 include("var.jl")
 include("gradient.jl")
+include("layers.jl")
 include("utils.jl")
 
 include("functions/arithmetic.jl")

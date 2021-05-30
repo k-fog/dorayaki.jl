@@ -25,13 +25,13 @@ Base.:*(A, B::Var) = matmul(A, B)
 
 
 """
-    Linear <: Func
+    Linear_F <: Func
 """
-@func mutable struct Linear end
+@func mutable struct Linear_F end
 
-forward(f::Linear, w, x, b=nothing) = b isa Nothing ? w * x : w * x .+ b
+forward(f::Linear_F, w, x, b=nothing) = b isa Nothing ? w * x : w * x .+ b
 
-function backward(f::Linear, gy)
+function backward(f::Linear_F, gy)
     w, x, b = length(f.args) == 3 ? f.args : (f.args..., nothing)
     gb = b isa Nothing ? nothing : sumto(gy, size(b))
     gw = matmul(gy, transpose(x))
@@ -39,7 +39,7 @@ function backward(f::Linear, gy)
     return gw, gx, gb
 end
 
-linear(w, x, b=nothing) = b isa Nothing ? Linear()(w, x) : Linear()(w, x, b)
+linear(w, x, b=nothing) = b isa Nothing ? Linear_F()(w, x) : Linear_F()(w, x, b)
 
 
 """
