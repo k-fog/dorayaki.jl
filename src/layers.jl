@@ -2,7 +2,6 @@ export params, Linear
 
 abstract type AbstractLayer <: Func end
 
-
 function (lyr::AbstractLayer)(args...)
     outputs = forward(lyr, args...)
     outputs isa Tuple || (outputs = (outputs,))
@@ -35,13 +34,6 @@ function cleargrad!(x::AbstractLayer)
 end
 
 cleargrad!(x::AbstractLayer...) = cleargrad!.(x)
-
-
-"""
-    Layer <: AbstractLayer
-"""
-@func mutable struct Layer <: AbstractLayer
-end
 
 
 """
