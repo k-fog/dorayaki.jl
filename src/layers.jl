@@ -1,23 +1,39 @@
-export params, Linear
+import Base: show
+
+export Chain, applychain, params, Linear, MLP
 
 abstract type AbstractLayer <: Func end
 
+struct Chain
+    layers::Tuple
+    Chain(xs...) = new(xs)
+end
 
-function (lyr::AbstractLayer)(args...)
-    outputs = forward(lyr, args...)
+applychain(layers::Tuple, x...) = applychain(tail(layers), first(layers)(x...))
+
+(c::Chain)(xs...) = applychain(c.layers, xs...)
+
+function show(io::IO, c::Chain)
+  print(io, "Chain(")
+  join(io, c.layers, ", ")
+  print(io, ")")
+end
+
+function (layer::AbstractLayer)(args...)
+    outputs = forward(layer, args...)
     outputs isa Tuple || (outputs = (outputs,))
-    lyr.args = Tuple(WeakRef(x) for x in args)
-    lyr.outputs = Tuple(WeakRef(y) for y in outputs)
+    layer.args = Tuple(WeakRef(x) for x in args)
+    layer.outputs = Tuple(WeakRef(y) for y in outputs)
     return length(outputs) > 1 ? outputs : outputs[1]
 end
 
 
-function params(lyr::AbstractLayer)
-    pnames = propertynames(lyr)
+function params(layer::AbstractLayer)
+    pnames = propertynames(layer)
     ps = []
     for pname in pnames
         pname in (:args, :outputs) && continue
-        p = isdefined(lyr, pname) ? getfield(lyr, pname) : nothing
+        p = isdefined(layer, pname) ? getfield(layer, pname) : nothing
         if isparam(p)
             push!(ps, p)
         elseif p isa AbstractLayer
@@ -38,13 +54,6 @@ cleargrad!(x::AbstractLayer...) = cleargrad!.(x)
 
 
 """
-    Layer <: AbstractLayer
-"""
-@func mutable struct Layer <: AbstractLayer
-end
-
-
-"""
     Linear <: AbstractLayer
 """
 @func mutable struct Linear <: AbstractLayer
@@ -60,12 +69,20 @@ end
 
 _initW(in, out, dtype) = randn(dtype, out, in) .* dtype(sqrt(1 / in))
 
-function forward(lyr::Linear, x)
-    return linear(lyr.weight, x, lyr.bias)
+function forward(layer::Linear, x)
+    return linear(layer.weight, x, layer.bias)
 end
 
-function Base.show(io::IO, l::Linear)
+function show(io::IO, l::Linear)
   print(io, "Linear(", size(l.weight, 2), ", ", size(l.weight, 1))
   l.bias isa Nothing && print(io, "; bias=false")
   print(io, ")")
+end
+
+
+"""
+    MLP <: AbstractLayer
+"""
+@func mutable struct MLP
+    
 end
