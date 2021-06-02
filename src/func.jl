@@ -1,6 +1,6 @@
 using .Meta
 
-export Func, NullFunc, nullfunc, @func
+export Func, NullFunc, nullfunc, ParamCreator, paramcreator, @func
 
 abstract type Func end
 
@@ -28,10 +28,7 @@ function (f::Func)(args...)
 end
 
 
-"""
-    @func
-"""
-macro func(obj)
+function _addfields(obj)
     @assert obj.head == :struct "@func is for struct type."
     if obj.args[2] isa Symbol
         name = obj.args[2]
@@ -54,5 +51,13 @@ macro func(obj)
     if length(definedfield.args) == 1
         push!(obj.args[3].args, :($name() = new()))
     end
-    return esc(obj)
+    return obj
+end
+
+
+"""
+    @func
+"""
+macro func(obj)
+    return esc(_addfields(obj))
 end

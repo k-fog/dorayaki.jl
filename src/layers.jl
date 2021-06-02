@@ -4,12 +4,16 @@ export Chain, applychain, params, Linear, MLP
 
 abstract type AbstractLayer <: Func end
 
+"""
+    Chain
+"""
 struct Chain
     layers::Tuple
     Chain(xs...) = new(xs)
 end
 
-applychain(layers::Tuple, x...) = applychain(tail(layers), first(layers)(x...))
+applychain(layers::Tuple, x...) = applychain(layers[2:end], first(layers)(x...))
+applychain(layers::Tuple{}, x...) = length(x) > 1 ? x : x[1]
 
 (c::Chain)(xs...) = applychain(c.layers, xs...)
 
@@ -39,7 +43,7 @@ function params(layer::AbstractLayer)
         elseif p isa AbstractLayer
             append!(ps, params(p))
         end
-    end
+    end 
     return ps
 end
 
@@ -77,12 +81,4 @@ function show(io::IO, l::Linear)
   print(io, "Linear(", size(l.weight, 2), ", ", size(l.weight, 1))
   l.bias isa Nothing && print(io, "; bias=false")
   print(io, ")")
-end
-
-
-"""
-    MLP <: AbstractLayer
-"""
-@func mutable struct MLP
-    
 end
