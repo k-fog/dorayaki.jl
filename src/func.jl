@@ -1,5 +1,3 @@
-using .Meta
-
 export Func, NullFunc, nullfunc, ParamCreator, paramcreator, @func
 
 abstract type Func end
@@ -33,11 +31,11 @@ function _addfields(obj)
     if obj.args[2] isa Symbol
         name = obj.args[2]
         obj.args[2] = :($name <: Func)
-    elseif isexpr(obj.args[2], :curly)
+    elseif Meta.isexpr(obj.args[2], :curly)
         name = obj.args[2].args[1]
         header = obj.args[2]
         if obj.args[2].args[end] != :Func obj.args[2] = :($header <: Func) end
-    elseif isexpr(obj.args[2], :<:)
+    elseif Meta.isexpr(obj.args[2], :<:)
         name = obj.args[2].args[1]
     else
         @error "unexpected args."

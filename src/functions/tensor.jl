@@ -19,9 +19,13 @@ end
 
 matmul(w, x) = MatMul()(w, x)
 
-Base.:*(A::Var, B::Var) = matmul(A, B)
-Base.:*(A::Var, B) = matmul(A, B)
-Base.:*(A, B::Var) = matmul(A, B)
+function Base.:*(A::Var, B::Var)
+    sizeA, sizeB = size(A), size(B)
+    sizeA == sizeB == (1,) && return mul(A, B) # when both A and B is a number
+    return matmul(A, B)
+end
+Base.:*(A::Var, B) = *(A, asvar(B))
+Base.:*(A, B::Var) = *(asvar(A), B)
 
 
 """
