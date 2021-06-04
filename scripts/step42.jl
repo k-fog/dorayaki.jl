@@ -32,8 +32,7 @@ function main(x, y)
     return W.data[1], b.data[1]
 end
 
-ret = @benchmark main(x, y)
-#= 
+ret = main(x, y)
 f(a) = ret[1] * a + ret[2]
-fig = plot(x, y, st=:scatter)
-plot!(fig, f) =#
+fig = plot(x', y', st=:scatter)
+plot!(fig, f)
