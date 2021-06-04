@@ -15,5 +15,5 @@ function gradient!(top::Var; debug=false)
             isgraddefined(x) && !isnothing(gx) ? x.grad = x.grad + gx : x.grad = gx
         end
     end
-    return sorted[end]
+    return sorted[end].grad
 end
