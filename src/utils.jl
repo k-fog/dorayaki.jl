@@ -6,7 +6,7 @@ function topsort(top::Var)
     function visit(x)
         x in visited && return
         push!(visited, x)
-        x.creator isa Union{NullFunc,ParamCreator} && return push!(sorted, x)
+        x.creator isa SymbolFunc && return push!(sorted, x)
         for v in x.creator.args
             v isa Var && visit(v)
         end

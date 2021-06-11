@@ -1,4 +1,4 @@
-export sigmoid
+export Sigmoid, sigmoid
 
 
 """

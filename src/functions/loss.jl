@@ -1,4 +1,4 @@
-export mean_squared_error
+export MeanSquaredError, mean_squared_error
 
 """
     MeanSquaredError <: Func

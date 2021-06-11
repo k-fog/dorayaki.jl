@@ -26,6 +26,11 @@ function (f::Func)(args...)
 end
 
 
+function Base.show(io::IO, v::Func)
+    print(io, typeof(v))
+end
+
+
 function _addfields(obj)
     @assert obj.head == :struct "@func is for struct type."
     if obj.args[2] isa Symbol

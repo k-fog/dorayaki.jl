@@ -1,5 +1,7 @@
 import Base: sin, cos, tanh, exp, log
 
+export Sin, Cos, Tanh, Exp, Log
+
 """
     Sin <: Func
 """

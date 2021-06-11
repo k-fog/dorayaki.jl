@@ -1,5 +1,3 @@
-import Base: show
-
 export Chain, applychain, params, Linear, MLP
 
 abstract type AbstractLayer <: Func end
@@ -17,7 +15,10 @@ applychain(layers::Tuple{}, x...) = length(x) > 1 ? x : x[1]
 
 (c::Chain)(xs...) = applychain(c.layers, xs...)
 
-function show(io::IO, c::Chain)
+Base.getindex(c::Chain, i::Int) = c.layers[i]
+Base.getindex(c::Chain, i::AbstractArray) = Chain(c.layers[i]...)
+
+function Base.show(io::IO, c::Chain)
   print(io, "Chain(")
   join(io, c.layers, ", ")
   print(io, ")")
@@ -33,18 +34,7 @@ end
 
 
 function params(layer::AbstractLayer)
-    pnames = propertynames(layer)
-    ps = []
-    for pname in pnames
-        pname in (:args, :outputs) && continue
-        p = isdefined(layer, pname) ? getfield(layer, pname) : nothing
-        if isparam(p)
-            push!(ps, p)
-        elseif p isa AbstractLayer
-            append!(ps, params(p))
-        end
-    end 
-    return ps
+    
 end
 
 
@@ -75,10 +65,4 @@ _initW(in, out, dtype) = randn(dtype, out, in) .* dtype(sqrt(1 / in))
 
 function forward(layer::Linear, x)
     return linear(layer.weight, x, layer.bias)
-end
-
-function show(io::IO, l::Linear)
-  print(io, "Linear(", size(l.weight, 2), ", ", size(l.weight, 1))
-  l.bias isa Nothing && print(io, "; bias=false")
-  print(io, ")")
 end
