@@ -6,7 +6,7 @@
     
     x = randn(3, 3)
     y = randn(3, 3)
-    f = x -> x + y
+    f = x -> x .+ y
     @test gradcheck(f, x)
 
     x = Var(randn(3, 3))
@@ -31,6 +31,7 @@ end
 
     y = randn(3)
     @test gradcheck(f, x)
+
     f = y -> x .* y
     @test gradcheck(f, x)
 end
