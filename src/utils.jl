@@ -73,7 +73,7 @@ end
 
 
 function numericalgrad(f, x, args...; eps=1e-4)
-    x = x isa Var ? x.data : x
+    x = x isa Var ? copy(x.data) : copy(x)
     grad = zeros(Float64, size(x))
     for idx in 1:length(x)
         tmp = copy(x[idx])
