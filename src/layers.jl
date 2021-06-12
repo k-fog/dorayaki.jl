@@ -15,8 +15,10 @@ applychain(layers::Tuple{}, x...) = length(x) > 1 ? x : x[1]
 
 (c::Chain)(xs...) = applychain(c.layers, xs...)
 
+Base.length(c::Chain) = length(c.layers)
 Base.getindex(c::Chain, i::Int) = c.layers[i]
 Base.getindex(c::Chain, i::AbstractArray) = Chain(c.layers[i]...)
+Base.lastindex(c::Chain) = c.layers[end]
 
 function Base.show(io::IO, c::Chain)
   print(io, "Chain(")
@@ -32,19 +34,23 @@ function (layer::AbstractLayer)(args...)
     return length(outputs) > 1 ? outputs : outputs[1]
 end
 
+vars(layer::AbstractLayer) = [topsort(n.value) for n in layer.outputs]
+
+vars(model::Chain) = vars(model[end])
 
 function params(layer::AbstractLayer)
-    
+    nodes = vars(layer)
+    filter(x -> isparam(x), nodes)
 end
 
+params(model::Chain) = params(model[end])
 
-function cleargrad!(x::AbstractLayer)
-    for p in params(x)
-        cleargrad!(p)
-    end
-end
 
-cleargrad!(x::AbstractLayer...) = cleargrad!.(x)
+cleargrad!(model::Chain) = cleargrad!(vars(model))
+
+cleargrad!(layer::AbstractLayer) = cleargrad!(vars(layer))
+
+cleargrad!(layers::AbstractLayer...) = cleargrad!.(layers)
 
 
 """

@@ -17,10 +17,8 @@ function main(x, y)
 
         gradient!(loss)
 
-        for l in (l1, l2)
-            for p in params(l)
-                p.data .-= lr .* p.grad.data
-            end
+        for l in params(model)
+            p.data .-= lr .* p.grad.data
         end
 
         if i % 1000 == 0
