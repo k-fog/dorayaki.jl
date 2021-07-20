@@ -1,7 +1,6 @@
 using Dorayaki
 using Random
 using Plots
-using BenchmarkTools
 
 Random.seed!(0)
 
