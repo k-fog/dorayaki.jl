@@ -29,24 +29,6 @@ Base.:*(A, B::Var) = *(asvar(A), B)
 
 
 """
-    Linear_F <: Func
-"""
-@func mutable struct Linear_F end
-
-forward(f::Linear_F, w, x, b=nothing) = b isa Nothing ? w * x : w * x .+ b
-
-function backward(f::Linear_F, gy)
-    w, x, b = length(f._inputs) == 3 ? f._inputs : (f._inputs..., nothing)
-    gb = b isa Nothing ? nothing : sumto(gy, size(b))
-    gw = matmul(gy, transpose(x))
-    gx = matmul(transpose(w), gy)
-    return gw, gx, gb
-end
-
-linear(w, x, b=nothing) = b isa Nothing ? Linear_F()(w, x) : Linear_F()(w, x, b)
-
-
-"""
     Reshape <: Func
 """
 @func mutable struct Reshape
