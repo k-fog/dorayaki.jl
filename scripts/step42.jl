@@ -23,7 +23,7 @@ function main(x, y)
         cleargrad!(W)
         cleargrad!(b)
 
-        gradient!(loss)
+        backward!(loss)
         W.data .-= lr .* W.grad.data
         b.data .-= lr .* b.grad.data
         # println(W.data, b.data, loss.data)

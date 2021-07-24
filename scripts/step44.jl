@@ -23,7 +23,7 @@ function main(x, y)
 
         cleargrad!(l1, l2)
 
-        gradient!(loss)
+        backward!(loss)
 
         for l in (l1, l2)
             for p in params(l)

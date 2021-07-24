@@ -12,7 +12,7 @@ function forward(f::MeanSquaredError, x1, x2)
 end
 
 function backward(f::MeanSquaredError, gy)
-    x1, x2 = f.args
+    x1, x2 = f._inputs
     diff = x1 - x2
     gx1 = gy .* diff .* (2.0 / length(diff))
     gx2 = -gx1

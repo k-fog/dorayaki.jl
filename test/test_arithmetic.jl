@@ -56,6 +56,6 @@ end
     x = Var(2)
     @test (x^10).data == [1024]
     y = x^2
-    gradient!(y)
+    backward!(y)
     @test x.grad.data == [4.0]
 end

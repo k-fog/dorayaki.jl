@@ -3,6 +3,9 @@ uuid = "db704eea-eb9c-4b8f-8ddf-d963a75c2e59"
 authors = ["k-fog"]
 version = "0.1.0"
 
+[deps]
+PyCall = "438e738f-606a-5dbb-bf0a-cddfbfd45ab0"
+
 [compat]
 julia = "1"
 

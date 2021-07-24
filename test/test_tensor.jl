@@ -3,7 +3,7 @@
     x = Var(p)
     y = reshape(x, 6)
     @test reshape(p, 6) == y.data
-    gradient!(y)
+    backward!(y)
     @test size(x) == size(x.grad)
 end
 

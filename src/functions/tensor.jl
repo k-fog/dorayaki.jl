@@ -11,7 +11,7 @@ export matmul, linear, reshape, transpose, adjoint, broadcastto, sumto
 forward(f::MatMul, w, x) = w * x
 
 function backward(f::MatMul, gy)
-    w, x = f.args
+    w, x = f._inputs
     gw = matmul(gy, transpose(x))
     gx = matmul(transpose(w), gy)
     return gw, gx
@@ -36,7 +36,7 @@ Base.:*(A, B::Var) = *(asvar(A), B)
 forward(f::Linear_F, w, x, b=nothing) = b isa Nothing ? w * x : w * x .+ b
 
 function backward(f::Linear_F, gy)
-    w, x, b = length(f.args) == 3 ? f.args : (f.args..., nothing)
+    w, x, b = length(f._inputs) == 3 ? f._inputs : (f._inputs..., nothing)
     gb = b isa Nothing ? nothing : sumto(gy, size(b))
     gw = matmul(gy, transpose(x))
     gx = matmul(transpose(w), gy)
@@ -56,7 +56,7 @@ end
 
 forward(f::Reshape, x) = reshape(x, f.shape)
 
-backward(f::Reshape, gy) = reshape(gy, size(f.args[1]))
+backward(f::Reshape, gy) = reshape(gy, size(f._inputs[1]))
 
 function reshape(x, shape...)
     if length(shape) == 1 && shape[1] isa Union{Tuple,AbstractArray}
@@ -112,7 +112,7 @@ end
 
 forward(f::BroadcastTo, x) = x .* ones(f.shape)
 
-backward(f::BroadcastTo, gy) = sumto(gy, size(f.args[1]))
+backward(f::BroadcastTo, gy) = sumto(gy, size(f._inputs[1]))
 
 broadcastto(x::Var, shape) = size(x) == shape ? asvar(x) : BroadcastTo(shape)(x)
 
@@ -127,6 +127,6 @@ end
 
 forward(f::SumTo, x) = _sumto(x, f.shape)
 
-backward(f::SumTo, gy) = broadcastto(gy, size(f.args[1]))
+backward(f::SumTo, gy) = broadcastto(gy, size(f._inputs[1]))
 
 sumto(x::Var, shape) = size(x) == shape ? asvar(x) : SumTo(shape)(x)

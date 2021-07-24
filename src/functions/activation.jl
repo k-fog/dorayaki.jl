@@ -8,8 +8,8 @@ export Sigmoid, sigmoid
 
 forward(f::Sigmoid, x) = @. tanh(x * 0.5) * 0.5 + 0.5
 
-function backward(self, gy)
-    y = self.outputs[1].value
+function backward(f::Sigmoid, gy)
+    y = f.outputs[1]
     return gy .* y .* (1 - y)
 end
 

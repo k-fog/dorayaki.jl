@@ -34,7 +34,7 @@ cos(x::Var) = Cos()(x)
 forward(f::Tanh, x) = tanh.(x)
 
 function backward(f::Tanh, gy)
-    y = f.outputs[1].value
+    y = f._outputs[1].value
     return gy .* (1 - y .* y)
 end
 
@@ -48,7 +48,7 @@ tanh(x::Var) = Tanh()(x)
 
 forward(f::Exp, x) = exp.(x)
 
-backward(f::Exp, gy) = gy .* f.outputs[1].value
+backward(f::Exp, gy) = gy .* f._outputs[1].value
 
 exp(x::Var) = Exp()(x)
 
@@ -61,7 +61,7 @@ exp(x::Var) = Exp()(x)
 forward(f::Log, x) = log.(x)
 
 function backward(f::Log, gy)
-    x, = f.args
+    x, = f._inputs
     return gy / x
 end
 

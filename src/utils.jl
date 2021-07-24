@@ -6,8 +6,8 @@ function topsort(top::Var)
     function visit(x)
         x in visited && return
         push!(visited, x)
-        x.creator isa SymbolFunc && return push!(sorted, x)
-        for v in x.creator.args
+        x.creator isa NullFunc && return push!(sorted, x)
+        for v in x.creator._inputs
             v isa Var && visit(v)
         end
         push!(sorted, x)
@@ -29,10 +29,10 @@ end
 function _dot_func(f::Func)
     func_name = split(string(typeof(f)), ".")[end]
     txt = "$(objectid(f)) [label=\"$(func_name)\", color=lightblue, style=filled, shape=box]\n"
-    for x in f.args
+    for x in f._inputs
         txt *= "$(objectid(x)) -> $(objectid(f))\n"
     end
-    for y in f.outputs
+    for y in f._outputs
         txt *= "$(objectid(f)) -> $(objectid(y.value))\n"
     end
     return txt
@@ -45,9 +45,9 @@ function get_dot_graph(output::Var; verbose=true)
 
     for v in variables
         f = v.creator
-        f isa SymbolFunc && continue
+        f isa NullFunc && continue
         txt *= _dot_func(f)
-        for x in f.args
+        for x in f._inputs
             txt *= _dot_var(x, verbose)
         end
     end
@@ -92,7 +92,7 @@ function gradcheck(f, x, args...; rtol=1e-4, atol=1e-5)
     x = asvar(x)
     num_grad = numericalgrad(f, x, args...)
     y = f(x, args...)
-    gradient!(y)
+    backward!(y)
     bp_grad = x.grad.data
     size(num_grad) == size(bp_grad) || return false
     allclose(num_grad, bp_grad) || return false

@@ -7,7 +7,7 @@ function check(f, ans)
     x = Var(1)
     y = Var(1)
     z = f(x, y)
-    gradient!(z)
+    backward!(z)
     (x.grad.data, y.grad.data) == ans
 end
 

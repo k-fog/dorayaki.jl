@@ -12,7 +12,7 @@ forward(f::Add, A, B) = A .+ B
 
 function backward(f::Add, gy)
     gx1, gx2 = gy, gy
-    x_shape1, x_shape2 = size.(f.args)
+    x_shape1, x_shape2 = size.(f._inputs)
     if x_shape1 != x_shape2
         gx1 = sumto(gx1, x_shape1)
         gx2 = sumto(gx2, x_shape2)
@@ -39,10 +39,10 @@ broadcasted(::typeof(+), A, B::Var) = add(A, B)
 forward(f::Mul, A, B) = A .* B
 
 function backward(f::Mul, gy)
-    x1, x2 = f.args
+    x1, x2 = f._inputs
     gx1 = gy .* x2
     gx2 = gy .* x1
-    x_shape1, x_shape2 = size.(f.args)
+    x_shape1, x_shape2 = size.(f._inputs)
     if x_shape1 != x_shape2
         gx1 = sumto(gx1, x_shape1)
         gx2 = sumto(gx2, x_shape2)
@@ -80,7 +80,7 @@ forward(f::Sub, A, B) = A .- B
 
 function backward(f::Sub, gy)
     gx1, gx2 = gy, -gy
-    x_shape1, x_shape2 = size.(f.args)
+    x_shape1, x_shape2 = size.(f._inputs)
     if x_shape1 != x_shape2
         gx1 = sumto(gx1, x_shape1)
         gx2 = sumto(gx2, x_shape2)
@@ -109,7 +109,7 @@ end
 
 forward(f::Pow, x) = x.^f.c
 
-backward(f::Pow, gy) = f.c .* f.args[1]^(f.c - 1) .* gy
+backward(f::Pow, gy) = f.c .* f._inputs[1]^(f.c - 1) .* gy
 
 pow(x, c) = Pow(c)(x)
 
@@ -124,10 +124,10 @@ Base.:^(x::Var, c) = pow(x, c)
 forward(f::Div, A, B) = A ./ B
 
 function backward(f::Div, gy)
-    x1, x2 = f.args
+    x1, x2 = f._inputs
     gx1 = gy / x2
     gx2 = gy .* (-x1 / x2^2)
-    x_shape1, x_shape2 = size.(f.args)
+    x_shape1, x_shape2 = size.(f._inputs)
     if x_shape1 != x_shape2
         gx1 = sumto(gx1, x_shape1)
         gx2 = sumto(gx2, x_shape2)

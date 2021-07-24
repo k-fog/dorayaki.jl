@@ -5,12 +5,6 @@ abstract type Func end
 struct NullFunc <: Func end
 const nullfunc = NullFunc()
 
-struct ParamCreator <: Func end
-const paramcreator = ParamCreator()
-
-const SymbolFunc = Union{NullFunc, ParamCreator}
-
-
 """
     (f::Func)(args...)
 """
@@ -20,8 +14,8 @@ function (f::Func)(args...)
     ys = forward(f, xs...)
     ys isa Tuple || (ys = (ys,))
     outputs = enable_backprop[] ? [asvar(y, f) for y in ys] : [asvar(y) for y in ys]
-    f.args = args
-    f.outputs = Tuple(WeakRef(output) for output in outputs)
+    f._inputs = args
+    f._outputs = Tuple(WeakRef(output) for output in outputs)
     return length(outputs) > 1 ? outputs : outputs[1]
 end
 
@@ -48,8 +42,8 @@ function _addfields(obj)
     definedfield = obj.args[3]
     obj.args[3] = quote
         $definedfield
-        args::Tuple
-        outputs::Tuple
+        _inputs::Tuple
+        _outputs::Tuple
     end
     if length(definedfield.args) == 1
         push!(obj.args[3].args, :($name() = new()))

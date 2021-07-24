@@ -5,10 +5,11 @@ mutable struct Var{T <: AbstractArray,F <: Func}
     data::T
     creator::F
     grad::Union{Var,Nothing}
+    name::String
 end
 
-function Var(data::T, creator::F=nullfunc) where {T <: AbstractArray,F <: Func}
-    Var{T,F}(data, creator, nothing)
+function Var(data::T, creator::F=nullfunc; name="") where {T <: AbstractArray,F <: Func}
+    Var{T,F}(data, creator, nothing, name)
 end
 Var(data::Number, creator=nullfunc) = Var([data], creator)
 
@@ -20,13 +21,9 @@ data(x::Var) = x.data
 gradient(x::Var) = x.grad
 
 Base.size(x::Var) = size(x.data)
-
 Base.size(x::Var, i::Int) = size(x.data, i)
-
 Base.length(x::Var) = length(x.data)
-
 Base.ndims(x::Var) = ndims(x.data)
-
 Base.eltype(x::Var) = eltype(x.data)
 
 function Base.show(io::IO, v::Var)
@@ -45,15 +42,8 @@ end
 
 isgraddefined(x::Var) = !isnothing(x.grad)
 
-const varname = WeakKeyDict{Var, String}()
-
-function addname!(x::Var, name)
-    varname[x] = name
+function setname(x::Var, name)
+    x.name = name
 end
 
-getname(x::Var) = haskey(varname, x) ? varname[name] : ""
-
-
-Param(data) = Var(data, paramcreator)
-
-isparam(x) = x isa Var && x.creator isa ParamCreator
+getname(x::Var) = x.name

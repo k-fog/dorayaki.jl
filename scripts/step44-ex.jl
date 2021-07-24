@@ -15,7 +15,7 @@ function main(x, y)
 
         cleargrad!(model)
 
-        gradient!(loss)
+        backward!(loss)
 
         for l in params(model)
             p.data .-= lr .* p.grad.data
