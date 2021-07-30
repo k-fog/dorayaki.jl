@@ -1,4 +1,5 @@
 using Dorayaki
+using Dorayaki: Functions as F
 using Random
 using Plots
 
@@ -13,15 +14,15 @@ function main(x, y)
     b2 = Var(zeros(O))
 
     function predict(p)
-        q = linear(w1, p, b1)
-        q = sigmoid(q)
-        q = linear(w2, q, b2)
+        q = F.linear(w1, p, b1)
+        q = F.sigmoid(q)
+        q = F.linear(w2, q, b2)
         return q
     end
 
     for i in 1:iters
         y_pred = predict(x)
-        loss = mean_squared_error(y, y_pred)
+        loss = F.mean_squared_error(y, y_pred)
 
         cleargrad!(w1, b1, w2, b2)
 

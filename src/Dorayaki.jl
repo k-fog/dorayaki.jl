@@ -2,8 +2,6 @@ module Dorayaki
 
 using CUDA
 
-export NN
-
 const NDArray{T,N} = Union{Array{T,N},CuArray{T,N}}
 
 include("config.jl")
@@ -17,7 +15,6 @@ include("functions/Functions.jl")
 using .Functions
 
 include("layers/Layers.jl")
-using .Layers
 
 function __init__()
     use_gpu[] = CUDA.functional()

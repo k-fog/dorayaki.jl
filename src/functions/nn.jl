@@ -13,7 +13,7 @@ function backward(f::Linear, gy)
     return gw, gx, gb
 end
 
-linear(w, x, b=nothing) = b isa Nothing ? Linear_F()(w, x) : Linear_F()(w, x, b)
+linear(w, x, b=nothing) = b isa Nothing ? Linear()(w, x) : Linear()(w, x, b)
 
 
 """
@@ -24,7 +24,7 @@ linear(w, x, b=nothing) = b isa Nothing ? Linear_F()(w, x) : Linear_F()(w, x, b)
 forward(f::Sigmoid, x) = @. tanh(x * 0.5) * 0.5 + 0.5
 
 function backward(f::Sigmoid, gy)
-    y = f.outputs[1]
+    y = f._outputs[1].value
     return gy .* y .* (1 - y)
 end
 
