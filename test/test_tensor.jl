@@ -21,6 +21,6 @@ end
 
     x_data = randn(10, 1)
     w_data = randn(1, 5)
-    f = w -> matmul(Var(x_data), w)
+    f = w -> Functions.matmul(Var(x_data), w)
     @test gradcheck(f, w_data)
 end

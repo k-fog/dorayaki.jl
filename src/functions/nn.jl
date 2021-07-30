@@ -1,7 +1,3 @@
-module NN
-
-using ..Dorayaki
-
 """
     Linear <: Func
 """
@@ -55,5 +51,3 @@ function backward(f::MeanSquaredError, gy)
 end
 
 mean_squared_error(x1, x2) = MeanSquaredError()(x1, x2)
-
-end

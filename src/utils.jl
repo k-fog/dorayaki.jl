@@ -98,19 +98,3 @@ function gradcheck(f, x, args...; rtol=1e-4, atol=1e-5)
     allclose(num_grad, bp_grad) || return false
     return true
 end
-
-
-function _sumto(x, shape)
-    target_dim = length(shape)
-    lead = ndims(x) - target_dim
-    lead_dims = Tuple(target_dim + 1:ndims(x))
-    dims = ()
-    for i in 1:target_dim
-        if shape[i] == 1
-            dims = tuple(dims..., i + lead)
-        end
-    end
-    y = sum(x, dims=(lead_dims..., dims...))
-    lead > 0 && (y = dropdims(y, dims=lead_dims))
-    return y
-end

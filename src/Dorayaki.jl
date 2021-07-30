@@ -13,11 +13,11 @@ include("gradient.jl")
 include("layers.jl")
 include("utils.jl")
 
-include("functions/arithmetic.jl")
-include("functions/basicmath.jl")
-include("functions/tensor.jl")
-include("functions/reduction.jl")
-include("functions/nn.jl")
+include("functions/Functions.jl")
+using .Functions
+
+include("layers/Layers.jl")
+using .Layers
 
 function __init__()
     use_gpu[] = CUDA.functional()

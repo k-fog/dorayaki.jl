@@ -112,3 +112,18 @@ forward(f::SumTo, x) = _sumto(x, f.shape)
 backward(f::SumTo, gy) = broadcastto(gy, size(f._inputs[1]))
 
 sumto(x::Var, shape) = size(x) == shape ? asvar(x) : SumTo(shape)(x)
+
+function _sumto(x, shape)
+    target_dim = length(shape)
+    lead = ndims(x) - target_dim
+    lead_dims = Tuple(target_dim + 1:ndims(x))
+    dims = ()
+    for i in 1:target_dim
+        if shape[i] == 1
+            dims = tuple(dims..., i + lead)
+        end
+    end
+    y = sum(x, dims=(lead_dims..., dims...))
+    lead > 0 && (y = dropdims(y, dims=lead_dims))
+    return y
+end
