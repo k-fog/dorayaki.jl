@@ -1,5 +1,7 @@
 # Dorayaki.jl
 
+未完成です。
+
 <div align="center">
     <img src="https://user-images.githubusercontent.com/59814110/120074209-c07ec580-c0d6-11eb-9050-fd69216e5594.png" width=200px>
 </div>
